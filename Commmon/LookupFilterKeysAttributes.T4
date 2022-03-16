@@ -1,0 +1,202 @@
+<#@ template language="C#" hostspecific="true" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Reflection" #>
+
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Xml" #>
+<#@ assembly name="System.Xml.Linq" #>
+<#@ assembly namespace="System.IO" #>
+<#@ assembly namespace="System.Linq" #>
+
+<#@ import namespace="System.Xml" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.Xml.Linq" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Reflection" #>
+
+
+<#+
+    
+    private string _pathToBinPool;
+    private Type CoreCommonType;
+   	private Dictionary<String, String> ForeignKeysToModule = new Dictionary<String, String>() { 
+       {"PRJ_PROJECT_FK", "project.main"}, {"PSD_SCHEDULE_FK", "scheduling.main"}, {"EST_HEADER_ASSEMBLY_FK", "estimate.main"}, {"BOQ_HEADER_FK", "boq.main"}, {"BOQ_ITEM_FK", "boq.main"}
+    };
+    private IEnumerable<String> keylist = new List<string>() {"PRJ_PROJECT_FK", "PSD_SCHEDULE_FK", "EST_HEADER_ASSEMBLY_FK", "BOQ_HEADER_FK", "BOQ_ITEM_FK"};
+
+    //WriteDebugLog1("Start Debugging Lookup... File ",false);
+
+    private void DetermineBinPoolPath(String fullEdmlPath)
+    {
+        try
+        {
+            var directoryInfo = new FileInfo(fullEdmlPath).Directory;
+            if (directoryInfo != null)
+            {
+                var moduleLevel = directoryInfo.Parent.Parent.Parent.Parent.Parent;
+                if (moduleLevel != null)
+                {
+                    _pathToBinPool = Path.Combine(moduleLevel.FullName, "BinPool");
+                }
+            }
+        }
+        catch (NullReferenceException)
+        {
+            throw new FileNotFoundException(String.Format("Cannot find path to BinPool"));
+        }
+    }
+
+
+    public String callMappingMethod(String FkIdentifier)
+    {
+        return GetModulebyKey(FkIdentifier);
+        // return (String)CoreCommonType.InvokeMember("GetModuleByFkIdentifier", BindingFlags.InvokeMethod, null, null, new[] { FkIdentifier });
+    }
+
+
+    public string GetModulebyKey(String key)
+    {
+        WriteDebugLog1("GetModulebyKey called Key="+key);
+        String result=ForeignKeysToModule[key];
+        return result;
+    }
+
+    public Boolean ContainsKey(String key)
+    {
+        // (IEnumerable<String>)CoreCommonType.InvokeMember("GetKeys", BindingFlags.InvokeMethod, null, null, null);
+        WriteDebugLog1("ContainsKey "+" Key="+key+" found="+keylist.Contains(key));
+        return keylist.Contains(key);
+    }
+
+
+    public void GenerateLookupFilterKeysAttribute(EntityProperty property, XDocument doc) {
+      
+        WriteDebugLog1("GenerateLookupFilterKeysAttribute started");
+        EntityClass parent = property.ParentClass as EntityClass;
+        if(parent != null && parent.ClassMapping !=null && parent.ClassMapping.GetDefaultTableMapping() != null){
+            var propName = "";
+            var mapping = parent.ClassMapping.GetDefaultTableMapping();
+            var tableName = mapping.StorageEntity.Name;
+            
+            var storageColumn = property.GetStorageColumn(parent.ClassMapping);
+            if(storageColumn != null){
+                propName = storageColumn.Name;
+            }
+           Generate(propName, tableName, doc);    
+        }
+        WriteDebugLog1("GenerateLookupFilterKeysAttribute done");
+    }
+
+    
+    private String[] CheckForFurtherFilters(XElement navigationProperty, XDocument xmlDoc)
+    {
+        WriteDebugLog1("CheckForFurtherFilters called");
+        var tableName = navigationProperty.Attribute("ToRole").Value;
+        List<String> resultList = new List<string>();
+        XElement dependendEntity = xmlDoc.Descendants().FirstOrDefault(e => e.Name.LocalName == "EntityType" && e.Attribute("Name").Value == tableName);
+        if (dependendEntity != null)
+        {
+            const string pattern = @"\.(\S+)[^\d\W]";
+
+            foreach (var descendant in dependendEntity.Descendants())
+            {
+                if (descendant.Name.LocalName == "NavigationProperty")
+                {
+                    var attr = descendant.Attribute("Relationship").Value;
+                    var matches = Regex.Match(attr, pattern);
+                    var searchString = matches.Groups[0].Value.Replace(".", string.Empty);
+					if (ContainsKey(searchString) && !resultList.Contains(callMappingMethod(searchString)))
+                    {
+                        resultList.Add(callMappingMethod(searchString));
+                    }
+                }
+            }
+        }
+        //WriteDebugLog1("CheckForFurtherFilters done"+resultList.ToString());
+        return resultList.ToArray();
+    }
+	
+    public void Generate(String propertyName, String tableName, XDocument xmlDoc)
+    {
+        XElement node = xmlDoc.Descendants().FirstOrDefault();
+        XElement navigationProperty = null;
+        String[] furtherFilters = { };
+        if (node != null)
+        {
+            XElement entityType = node.Descendants().FirstOrDefault(e => e.Name.LocalName == "EntityType" && e.Attribute("Name").Value == tableName);
+            if (entityType != null)
+            {
+                navigationProperty = entityType.Descendants().FirstOrDefault(e => e.Name.LocalName == "NavigationProperty" && e.Attribute("Relationship").Value.Contains(propertyName) );
+            }
+        }
+
+
+        if (navigationProperty != null && !String.IsNullOrEmpty(navigationProperty.Attribute("ToRole").Value))
+        {
+            furtherFilters = CheckForFurtherFilters(navigationProperty, xmlDoc);
+        }
+        if(furtherFilters.Length > 0){
+            WriteDebugLog1("Call createAttribute");
+            createAttribute(furtherFilters);
+            WriteDebugLog1("Call createAttribute done...");
+        }
+    }
+
+    
+    public void createAttribute(String[] filterKeys){
+	        #>        [RIB.Visual.Platform.Common.LookupFilterKeys(<#=        string.Join(",", filterKeys.Select(item => "\"" + item + "\"").ToArray()) #>)]
+<#+	
+    }
+
+   
+    public XDocument ReadCSDLFile(String edmlFullPath)
+    {
+        //WriteDebugLog ("1 ReadCSDLFile file="+edmlFullPath);
+        DetermineBinPoolPath(edmlFullPath);
+        //WriteDebugLog ("2 ReadCSDLFile );
+        return XDocument.Load(Path.Combine(_pathToBinPool,"BuildTools","Scheme", "iTWOCloud.csdl"));
+    }
+
+    public void debug(String val){
+		#>
+			//  <#=        val #>
+		<#+	
+    }
+
+    public void printObject(object a)
+    {
+        if(a == null){
+            return;
+        }
+        Type t = a.GetType();
+        PropertyInfo [] pi = t.GetProperties();
+        foreach (PropertyInfo p in pi)
+        {
+            debug(p.Name + ": " +  p.GetValue(a));
+        }
+    }
+
+    public void printMethods(object selectedObjcClass){
+        debug(selectedObjcClass.GetType().FullName);
+        MethodInfo[] methodInfos = selectedObjcClass.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance);
+
+        foreach(var m in methodInfos){
+            printObject(m.Name);
+        }
+    }
+
+      private void WriteDebugLog1(string msg, bool append=true){
+        //string debugoutfile="datatransferobject.t4.log";  //  @"c:\temp\datatransferobject.log"; 
+        string debugoutfile=@"c:\temp\LookupFilterKeysAttributes.T4.log"; 
+        bool debug=false;
+        if (!debug) return;
+        StreamWriter file = new StreamWriter(debugoutfile, append);
+        var _msg= string.Format("[{0}] {1}",DateTime.Now.ToString("yyyy.MM.dd HH:mm.ss.ffff"),msg);
+        file.WriteLine(_msg);
+        file.Close();
+  }
+  
+#>

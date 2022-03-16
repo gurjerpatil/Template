@@ -1,0 +1,1624 @@
+﻿<#
+    // Data Transfer Object template for Devart Entity Developer C# code generation.
+    // Copyright (c) 2008-2014 Devart. All rights reserved.
+#>
+<#@ template language="C#" debug="false" hostspecific="true" #>
+<#@ include file="Validation.T4" #>
+<#@ include file="GroupingAttributes.T4" #>
+<#@ include file="LookupFilterKeysAttributes.T4" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly namespace="System.Linq" #>
+<#@ assembly namespace="System.IO" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="System.IO" #>
+
+
+
+<#
+
+    // Template properties:
+    //------------------------------------------------------------------------------
+
+    // Output options
+#>
+<#@ property name="FilePerClass" category="Output" type="System.Boolean" default="false" description="If it is set to True, each DTO class will be placed to the separate file when generating code, otherwise, all DTO classes will be placed into a single file." #>
+<#@ property name="DtosOutput" displayName="DTO Output" category="Output" type="OutputInfo" editor="OutputInfoEditor" description="Specifies output for the generated DTO classes." #>
+<#@ property name="ConvertersOutput" category="Output" type="OutputInfo" editor="OutputInfoEditor" description="Specifies output for the generated DTO converter classes." #>
+<#@ property name="GeneratePartialDtos" displayName="Generate Partial DTOs" category="Output" type="System.Boolean" default="false" description="If it is set to True, then, for each DTO class a partial class will be generated, in which the user can add code that is not overwritten by the designer." #>
+<#@ property name="GeneratePartialConverters" category="Output" type="System.Boolean" default="false" description="If it is set to True, then, for each DTO converter class a partial class will be generated, in which the user can add code that is not overwritten by the designer." #>
+<#
+    // Common generation options
+#>
+<#@ property name="DtoNamespace" displayName="DTO Namespace" category="Generation" type="System.String" description="Specifies namespace for the generated DTO classes." #>
+<#@ property name="HeaderTimestampVersionControlTag" category="Generation" type="System.String" description="If this option is set, the standard date/time-stamp in the file header will be replaced with the specified tag (e.g. a version control tag for Subversion, Git, etc.)" #>
+<#
+    // DTO classes generation options
+#>
+<#@ property name="DtoClassNamePrefix" displayName="DTO Class Name Prefix" category="DTO Classes" type="System.String" default="" description="If this property is set, when generating a DTO class name, the value of this property is added to the name as a prefix." #>
+<#@ property name="DtoClassNameSuffix" displayName="DTO Class Name Suffix" category="DTO Classes" type="System.String" default="Dto" description="If this property is set, when generating a DTO class name, the value of this property is added to the name as a suffix." #>
+<#@ property name="WcfDataContractAttributes" displayName="WCF Data Contract Attributes" category="DTO Classes" type="System.Boolean" default="True" description="If it is set to True, WCF Data Contract attributes will be generated." #>
+<#@ property name="WcfDataMemberOnNavigationProperties" displayName="WCF DataMember Attribute on Navigation Properties" default="All" category="DTO Classes" type="WcfDataMemberGenerationBehavior" description="Specifies when the DataMember attribute must be generated for navigation properties. This property is used when 'WCF Data Contract Attributes' is set to true. By default the DataMember attribute is always generated if 'WCF Data Contract Attributes' is set to true." #>
+<#@ property name="GenerateDtoConstructors" displayName="DTO Constructors" category="DTO Classes" type="System.Boolean" default="True" description="If it is set to True, DTO class constructors are generated." #>
+<#@ property name="UseDtoClassesInAssociations" displayName="DTO Classes In Associations" category="DTO Classes" type="System.Boolean" default="True" description="If it is set to True, navigation properties for DTO classes are generated on any association end. These properties are generated as single DTO Objects (for a (0..1) or (1) association end) or collections of DTO objects (for a (*) association end). If it is set to False, The navigation properties for DTO classes are generated only for (*) association ends. If the dependent class has a simple primary key that consists of a single property, the navigation property is a collection of primitive type elements (for example, List<Int32>), that are the primary key values of the dependent class. If the primary key of the dependent class consists of several properties, the navigation property is a collection of new DTO class objects (for example, List<OtherClassKeyDto>), that contain only the primary key properties of the dependent class. If the dependent class does not have a primary key, the navigation property is a collection of the existing DTO class (for example, List<OtherClassDto>)." #>
+<#
+    // DTO Conversion generation options
+#>
+<#@ property name="GenerateConverters" category="DTO Conversion" type="System.Boolean" default="True" description="If it is set to True, DTO converter classes will be generated." #>
+<#@ property name="ConverterClassNamePrefix" category="DTO Conversion" type="System.String" default="" description="If this property is set, when generating a DTO converter class name, the value of this property is added to the name as a prefix." #>
+<#@ property name="ConverterClassNameSuffix" category="DTO Conversion" type="System.String" default="Converter" description="If this property is set, when generating a DTO converter class name, the value of this property is added to the name as a suffix." #>
+<#
+    // Extended properties for model objects
+#>
+<#@ extended name="GenerateDTO" type="System.Boolean" default="True" owner="Class" description="Defines whether to generate Data Transfer Object (DTO) class for this entity." #>
+<#@ extended name="GenerateDTO" type="System.Boolean" default="True" owner="ComplexType" description="Defines whether to generate Data Transfer Object (DTO) class for this complex type." #>
+<#@ extended name="GenerateOnlyMapping" type="System.Boolean" default="False" owner="ComplexType" description="if the flag is true, no Dto class is generated, but mapping will be done. Use this setting for Complextype DescriptionTranslateType, which is defined i.e. in platform.common." #>
+<#@ extended name="GenerateDTO" type="System.Boolean" default="True" owner="Property" description="Defines whether to include this property in generated Data Transfer Object (DTO) class." #>
+<#@ extended name="GenerateDTO" type="System.Boolean" default="True" owner="RelationProperty" description="Defines whether to include this relation property in generated Data Transfer Object (DTO) class." #>
+<#@ extended name="GenerateDTO" type="System.Boolean" default="True" owner="Association" description="Defines whether to include this association in generated Data Transfer Object (DTO) classes." #>
+<#@ extended name="UseProxyDTO" type="System.Boolean" default="False" owner="Class" description="Defines whether to generate Proxy Data Transfer Object (DTO) class for this entity." #>
+<#@ extended name="UseProxyDTO" type="System.Boolean" default="False" owner="ComplexType" description="Defines whether to generate Proxy Data Transfer Object (DTO) class for this complex type." #>
+<#@ extended name="JsonNullValueHandling" type="System.Boolean" default="False" owner="Class" description="Defines whether to generate Attribute JsonProperty(NullValueHandling...) for Data Transfer Object (DTO) class for this entity." #>
+<#@ extended name="JsonNullValueHandlingNavProp" type="System.Boolean" default="False" owner="Class" description="Defines whether to generate Attribute JsonProperty(NullValueHandling...) for Navigation Properties for Data Transfer Object (DTO) class for this entity." #>
+<#@ property name="JsonNullValueHandling" type="System.Boolean" category="Output" default="False" description="Defines whether to generate Attribute JsonProperty(NullValueHandling...) for Data Transfer Object (DTO) class for this entity." #>
+<#@ property name="JsonNullValueHandlingNavProp" type="System.Boolean" category="Output" default="False" description="Defines whether to generate Attribute JsonProperty(NullValueHandling...) for Navigation Properties for Data Transfer Object (DTO) class for this entity." #>
+<#@ extended name="PublicApiVersion" type="System.Int32" default="0" owner="Class" description="Specifies the public API version the DTO should be valid for. (Set to zero for non-public-API DTOs.)" #>
+<#@ extended name="CopyFromPublicApi" type="System.Boolean" default="False" owner="Property" description="If set to true, the property value will be copied from the public API entity to the writeable DB entity." #>
+<#@ extended name="IsIdentifyingCode" type="System.Boolean" default="False" owner="Property" description="Indicates whether the property is a part of the uniquely identifying code for the entity." #>
+<#@ extended name="InternalPropertyName" type="System.String" default="" owner="Property" description="On public API entity classes, indicates the name of the corresponding property on the internal entity class." #>
+<#@ extended name="StatusFkTypeName" type="System.String" default="" owner="Property" description="For an Fk property to a status table, indicates the entity type name that can be used to retrieve the appropriate IStatusConfiguration instance." #>
+<#@ extended name="DtoInheritanceModifier" displayName="DTO Inheritance Modifier" type="MemberInheritanceModifier" default="None" owner="Property" description="Specifies the inheritance modifier to apply to the property on the DTO." #>
+<#
+    //------------------------------------------------------------------------------
+    WriteDebugLog ("Start Debugging DTO File", false);
+    WriteDebugLog1("Start Debugging Lookup... File ",false);
+
+    // Settings
+    output.Extension = ".cs";
+    baseFileName = model.FileName;
+    WriteDebugLog ("Start Debugging File="+output.ToString());
+
+
+    string defaultNamespace = codeProvider.GetValidIdentifier(model.GetDefaultNamespace());
+    string dtosNamespace = !string.IsNullOrEmpty(DtoNamespace) ? codeProvider.GetValidIdentifier(DtoNamespace) : defaultNamespace;
+
+    // Generation
+
+    List<BaseClass> entities = model.Classes
+        .Where(cls => (bool)cls.GetProperty("GenerateDTO"))
+        .Cast<BaseClass>()
+        .Union(model.ComplexTypes
+        .Where(complexType => (bool)complexType.GetProperty("GenerateDTO") && !(bool)complexType.GetProperty("GenerateOnlyMapping"))
+        .Cast<BaseClass>()
+        )
+        .ToList();
+
+    //------------------------------------------------------------------------------
+    // Class generation for DTOs
+    //------------------------------------------------------------------------------
+
+    if (!FilePerClass) {
+        output.PushOutputRedirection(DtosOutput, baseFileName + ".DTOs");
+        GenerateDtoFileHeader(null);
+#>
+
+namespace <#=            dtosNamespace #>
+{
+<#
+    }
+
+    foreach (BaseClass cls in entities) {
+		List<Property> properties = GetActiveProperties(cls);
+
+		string dtoNamespaceSuffix = "";
+		var classDtosOutput = DtosOutput;
+		var publicApiVersion = (int)cls.GetProperty("PublicApiVersion");
+		if (publicApiVersion > 0)
+		{
+			dtoNamespaceSuffix += ".V" + publicApiVersion.ToString(System.Globalization.CultureInfo.InvariantCulture);
+			classDtosOutput = new OutputInfo
+			{
+				DestinationFolder = DtosOutput.DestinationFolder,
+				Project = DtosOutput.Project,
+				ProjectFolder = DtosOutput.ProjectFolder + @"\V" + publicApiVersion.ToString(System.Globalization.CultureInfo.InvariantCulture)
+			};
+		}
+
+        string dtoClassName = GetDtoClassName(cls);
+        if (FilePerClass) {
+            string rootFileName = dtoClassName;
+            if (GeneratePartialDtos) {
+                output.Extension = ".cs";
+                output.PushOutputRedirection(classDtosOutput, "", rootFileName, OverwriteMode.None);
+#>
+<#
+                GenerateUserPartialClassFileHeader();
+#>
+
+namespace <#= dtosNamespace + dtoNamespaceSuffix #>
+{
+    /// <summary/>
+    public partial class <#=                    codeProvider.GetValidIdentifier(dtoClassName) #>
+    {
+<#
+                if (!(bool)cls.GetProperty("UseProxyDTO")) {
+                    GeneratePartialMethods(cls);
+                }
+#>
+    }
+}
+<#
+                output.PopOutputRedirection();
+            }
+
+            output.Extension = ".cs";
+            if (GeneratePartialDtos)
+                output.PushOutputRedirection(classDtosOutput, rootFileName, rootFileName + ".Generated");
+            else
+                output.PushOutputRedirection(classDtosOutput, rootFileName);
+            GenerateDtoFileHeader(cls);
+            if (!string.IsNullOrEmpty(cls.Namespace)) {
+                if (dtosNamespace != cls.Namespace) {
+#>
+using <#=                        cls.Namespace #>;
+<#
+                }
+            }
+            else
+            {
+                string clsNamespace = model.GetDefaultNamespace() + ";";;
+#>
+using <#=                    clsNamespace #>
+<#
+            }
+#>
+
+namespace <#= dtosNamespace + dtoNamespaceSuffix #>
+{
+<#
+        }
+#>
+
+<#
+        GenerateCustomAttributesIfNeeded(cls.Attributes, 4);
+        GenerateWcfDataContractAttributeIfNeeded();
+
+
+        string currentClassName = codeProvider.GetValidIdentifier(dtoClassName);
+
+		string tableName = null;
+		var additionalTableAttributes = new System.Text.StringBuilder();
+
+		var eCls = cls as EntityClass;
+		if (eCls != null)
+		{
+			var tableMapping = eCls.ClassMapping.GetDefaultTableMapping();
+			tableName = tableMapping.Table.Source;
+
+			{
+				if ((tableMapping.StorageEntity != null) && !String.IsNullOrEmpty(tableMapping.StorageEntity.Schema))
+				{
+					additionalTableAttributes.Append(", Schema = \"" + tableMapping.StorageEntity.Schema + "\"");
+				}
+			}
+		}
+
+		GenerateDocumentation(cls.Documentation, cls.Name);
+
+if (!string.IsNullOrEmpty(tableName))
+{
+#>
+    [RIB.Visual.Platform.Common.MappedTable("<#= tableName #>"<#= additionalTableAttributes.ToString() #>)]
+<#
+}
+    WriteDebugLog ("Public Api Generation version="+publicApiVersion);
+
+if (publicApiVersion > 0)
+{
+    WriteDebugLog ("Public Api Generation started");
+#>
+    [RIB.Visual.Platform.Common.PublicApiVersion(<#= publicApiVersion.ToString(System.Globalization.CultureInfo.InvariantCulture) #>)]
+<#
+}
+#>
+    public partial class <#=            currentClassName #><# if (!(bool)cls.GetProperty("UseProxyDTO")) { #> : RIB.Visual.Platform.Core.ITypedDto<<#= cls.Name #>><# } #>
+
+    {
+<#
+        List<RelationProperty> relationProperties = GetActiveRelationProperties(cls);
+        if ((bool)cls.GetProperty("UseProxyDTO"))
+        {
+            GenerateProxyFields(cls);
+            GenerateAllConstructors4ProxyDTO(cls, currentClassName);
+            GenerateAllProperties4ProxyDTO(properties);
+        }
+        else
+        {
+            WriteDebugLog ("not using Proxy");
+
+            GenerateAllDtoConstructors(cls, currentClassName, properties, relationProperties);
+            WriteDebugLog ("Call GenerateAllProperties");
+            GenerateAllProperties(cls,properties);
+            WriteDebugLog ("Call GenerateAllRelationProperties");
+            GenerateAllRelationProperties(cls,relationProperties);
+            GenerateMappingMethods(cls, currentClassName, properties, relationProperties);
+        }
+#>
+    }
+<#
+        if (FilePerClass) {
+#>
+
+}
+<#
+            output.PopOutputRedirection();
+        }
+      WriteDebugLog ("End of DTO class generation");
+    } // End of DTO class generation
+
+    // DTO key class generation
+    if (!UseDtoClassesInAssociations) {
+        foreach (BaseClass cls in this.NewDtosWithComplexPk) {
+            string dtoKeyName = GetDtoKeyClassName(cls);
+            List<Property> idProperties = GetKeyProperties(cls);
+
+            if (FilePerClass) {
+                output.PushOutputRedirection(DtosOutput, dtoKeyName);
+                GenerateDtoFileHeader();
+#>
+
+namespace <#=                    dtosNamespace #>
+{
+<#
+            }
+
+            string dtoKeyClassName = codeProvider.GetValidIdentifier(dtoKeyName);
+#>
+
+<#
+            GenerateWcfDataContractAttributeIfNeeded();
+#>
+    /// <summary/>
+    public partial class <#=                dtoKeyClassName #>
+    {
+<#
+            GenerateAllProperties(cls, idProperties);
+#>
+    }
+<#
+            if (FilePerClass) {
+#>
+
+}
+<#
+                output.PopOutputRedirection();
+            }
+        }
+    WriteDebugLog ("End of DTO key class generation");
+
+    } // End of DTO key class generation
+
+    if (!FilePerClass) {
+#>
+
+}
+<#
+    }
+    // End of DTO classes generation
+
+
+    //------------------------------------------------------------------------------
+    // Class generation for DTO converters
+    //------------------------------------------------------------------------------
+    WriteDebugLog ("GenerateConverters");
+    if (GenerateConverters) {
+
+        if (!FilePerClass) {
+            output.PushOutputRedirection(ConvertersOutput, baseFileName + ".Converters");
+            GenerateConverterFileHeader();
+#>
+
+namespace <#=                dtosNamespace #>
+{
+<#
+        }
+
+        foreach (BaseClass cls in entities) {
+
+            Class realClass = cls as Class;
+            if (realClass != null && realClass.IsAbstract)
+                continue;
+
+            string dtoClassName = GetDtoClassName(cls);
+            string converterClassName = ConverterClassNamePrefix + cls.Name + ConverterClassNameSuffix;
+            if (FilePerClass) {
+                string rootFileName = converterClassName;
+                if (GeneratePartialConverters) {
+                    output.Extension = ".cs";
+                    output.PushOutputRedirection(ConvertersOutput, "", rootFileName, OverwriteMode.None);
+#>
+
+namespace <#=                        dtosNamespace #>
+{
+    /// <summary/>
+    public static partial class <#=                        codeProvider.GetValidIdentifier(converterClassName) #>
+    {
+    }
+}
+<#
+                    output.PopOutputRedirection();
+                }
+
+                output.Extension = ".cs";
+                if (GeneratePartialConverters)
+                    output.PushOutputRedirection(ConvertersOutput, rootFileName, rootFileName + ".Generated");
+                else
+                    output.PushOutputRedirection(ConvertersOutput, rootFileName);
+                GenerateConverterFileHeader();
+#>
+
+namespace <#=                    dtosNamespace #>
+{
+<#
+            }
+#>
+    /// <summary/>
+    public static partial class <#=                codeProvider.GetValidIdentifier(converterClassName) #>
+    {
+<#
+            string entityClassName = GetCodeElementReference(cls);
+            List<Property> allProperties = GetActiveProperties(cls);
+            List<RelationProperty> relationProperties = GetActiveRelationProperties(cls);
+#>
+    /// <summary/>
+    public static <#=                dtoClassName #> ToDto(this <#=                entityClassName #> source)
+    {
+        return source.ToDtoWithRelated(0);
+    }
+<#
+            ConverterSingleObjectWithRelatedCopyMethod(allProperties, relationProperties, "ToDto", "ToDtoWithRelated", "ToDtosWithRelated", entityClassName, dtoClassName, "OnDtoCreating");
+            ConverterSingleObjectCopyMethod(allProperties, relationProperties, "ToEntity", dtoClassName, entityClassName, "OnEntityCreating");
+            ConverterCollectionCopyMethod(cls, "ToDtos", "ToDto", entityClassName, dtoClassName);
+            ConverterCollectionWithRelatedCopyMethod(cls, "ToDtosWithRelated", "ToDtoWithRelated", entityClassName, dtoClassName);
+            ConverterCollectionCopyMethod(cls, "ToEntities", "ToEntity", dtoClassName, entityClassName);
+#>
+
+        static partial void OnDtoCreating(<#=                entityClassName #> source, <#=                dtoClassName #> target);
+
+        static partial void OnEntityCreating(<#=                dtoClassName #> source, <#=                entityClassName #> target);
+
+    }
+<#
+            if (FilePerClass) {
+#>
+
+}
+<#
+                output.PopOutputRedirection();
+            }
+
+        } // End of converter generation
+
+        foreach (BaseClass cls in this.NewDtosWithComplexPk) {
+            string converterClassName = ConverterClassNamePrefix + cls.Name + "Key" + ConverterClassNameSuffix;
+            string dtoClassName = GetDtoKeyClassName(cls);
+            string rootFileName = converterClassName;
+
+            if (FilePerClass) {
+                output.Extension = ".cs";
+                output.PushOutputRedirection(ConvertersOutput, rootFileName);
+                GenerateConverterFileHeader();
+#>
+
+namespace <#=                    dtosNamespace #>
+{
+<#
+            }
+#>
+    /// <summary/>
+    public static partial class <#=                codeProvider.GetValidIdentifier(converterClassName) #>
+    {
+<#
+            string entityClassName = GetCodeElementReference(cls);
+            List<Property> idProperties = this.GetKeyProperties(cls);
+            List<RelationProperty> relationProperties = new List<RelationProperty>();
+
+            ConverterSingleObjectCopyMethod(idProperties, relationProperties, "ToDtoKey", entityClassName, dtoClassName, null);
+            ConverterCollectionCopyMethod(cls, "ToDtoKeys", "ToDtoKey", entityClassName, dtoClassName);
+#>
+    }
+<#
+            if (FilePerClass) {
+#>
+
+}
+<#
+                output.PopOutputRedirection();
+            }
+        } // End of DTO key converter class generation
+
+        if (!FilePerClass) {
+#>
+
+}
+<#
+            output.PopOutputRedirection();
+        }
+
+    } // End of converters generation
+    WriteDebugLog ("End of generation");
+
+    // End of generation
+#>
+<#+
+    private string baseFileName = string.Empty;
+
+    private List<BaseClass> ExistingDtosWithComplexPk = new List<BaseClass>();
+    private List<BaseClass> NewDtosWithComplexPk = new List<BaseClass>();
+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// File header warning generation for automatically rewritable files.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GenerateFileHeaderWarning() {
+
+#>
+//------------------------------------------------------------------------------
+// This is auto-generated code.
+//------------------------------------------------------------------------------
+// This code was generated by Devart Entity Developer tool using Data Transfer Object template.
+// <#=        String.IsNullOrEmpty(HeaderTimestampVersionControlTag) ? "Code is generated on: " + DateTime.Now : HeaderTimestampVersionControlTag #>
+//
+// Changes to this file may cause incorrect behavior and will be lost if
+// the code is regenerated.
+//------------------------------------------------------------------------------
+
+<#+
+
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// DTO class file header generation.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GenerateDtoFileHeader(BaseClass cls=null) {
+
+        GenerateFileHeaderWarning();
+
+        if ((cls!=null) && (JsonNullValueHandling || (bool)cls.GetProperty("JsonNullValueHandling"))) {
+#>
+using Newtonsoft.Json;
+<#+
+        }
+#>
+using System.Collections.Generic;
+using RIB.Visual.Platform.Common;
+<#+
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Constructor generation for entity classes or complex types.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GenerateAllDtoConstructors(BaseClass cls, string className, List<Property> properties, List<RelationProperty> relationProperties) {
+
+        if (!GenerateDtoConstructors)
+            return;
+
+#>
+        #region Constructors
+
+        /// <summary>
+        /// Initializes an instance of class <#=        className #>.
+        /// </summary>
+        public <#=        className #>()
+        {
+        }
+
+        /// <summary>
+        /// Initializes an instance of class <#=        className #>.
+        /// </summary>
+        /// <param name="entity">the instance of class <#=        cls.Name #></param>
+        public <#=        className #>(<#=        cls.Name #> entity)
+        {
+<#+
+        var primitiveProperties = properties.Where(p=>!p.IsComplexType).ToList();
+
+        foreach (Property prop in primitiveProperties) {
+#>
+            <#=            codeProvider.GetValidIdentifier(prop.Name) #> = entity.<#=            codeProvider.GetValidIdentifier(prop.Name) #>;
+<#+
+        }
+#>
+<#+
+        var dtoComplexProperties = properties.Where(p=>p.IsComplexType).ToList();
+
+        foreach (Property dtoProp in dtoComplexProperties) {
+            var complexCls = model.ComplexTypes.Where(complexType => complexType.Name == dtoProp.Type.ToString()).Cast<BaseClass>().FirstOrDefault();
+
+#>
+
+            if (entity.<#=            codeProvider.GetValidIdentifier(dtoProp.Name) #> != null )
+            {
+<#+            // we check if the complex type DescriptionTranslateTypeDto is selected, then we use specific copy function
+            // rei add 4.8.2014
+            string t=(string)GetDtoClassName(complexCls).ToString();
+            if (t.Equals ("DescriptionTranslateTypeDto"))  { #>
+                <#=                codeProvider.GetValidIdentifier(dtoProp.Name) #> = new <#=                GetDtoClassName(complexCls) #>(entity.<#=                codeProvider.GetValidIdentifier(dtoProp.Name) #>);
+<#+            } else {
+                // else everything remain original
+#>
+                <#=                codeProvider.GetValidIdentifier(dtoProp.Name) #> = new <#=                GetDtoClassName(complexCls) #>();
+<#+
+                var activeProperties = GetActiveProperties (complexCls);
+                foreach (var property in activeProperties) {
+#>
+                  <#=                    codeProvider.GetValidIdentifier(dtoProp.Name) #>.<#=                    property.Name #> = entity.<#=                    codeProvider.GetValidIdentifier(dtoProp.Name) #>.<#=                    property.Name #>;
+<#+
+                }
+#>
+
+<#+            }#>
+            }
+<#+
+        }
+#>
+
+            // call partial method if implemented
+            OnConstruct(entity);
+        }
+
+        #endregion
+<#+
+    }
+#>
+<#+
+
+/*    Assembly ResolveHandler(object source, ResolveEventArgs e)
+    {
+        WriteDebugLog ("ResolveHandler name="+e.Name);
+        return Assembly.Load(Path.Combine(_pathToBinPool, e.Name));
+    }
+
+
+    private void LoadAssembly()
+    {
+        WriteDebugLog ("LoadAssembly called");
+        var path = Path.Combine(_pathToBinPool,"Debug.Server", "RIB.Visual.Basics.Core.Common.dll");
+        var namespaceCoreCommon  = "RIB.Visual.Basics.Core.Common";
+        WriteDebugLog ("LoadAssembly called path="+path.ToString());
+
+        Assembly assembly = Assembly.LoadFrom(path);
+        WriteDebugLog ("LoadFrom Assembly "+assembly.ToString());
+        AppDomain ad = AppDomain.CurrentDomain;
+        WriteDebugLog ("LoadFrom AppDomain "+ad.ToString());
+        ad.AssemblyResolve += ResolveHandler;
+        CoreCommonType = assembly.GetType(namespaceCoreCommon + ".ModuleFkMapping");
+        WriteDebugLog ("LoadFrom CoreCommonType "+CoreCommonType.ToString());
+        var methods = CoreCommonType.GetMethods(BindingFlags.Public | BindingFlags.Static);
+        foreach (var meth in methods) {
+            WriteDebugLog ("LoadFrom method= "+meth.ToString());
+        }
+
+        WriteDebugLog ("LoadFrom CreateInstance ");
+        object classInstance = Activator.CreateInstance(CoreCommonType);
+
+        WriteDebugLog ("LoadFrom GetMethod ");
+        MethodInfo methodInfo = CoreCommonType.GetMethod("GetKeys");
+        WriteDebugLog ("LoadFrom GetMethod done "+methodInfo.ToString());
+
+
+        WriteDebugLog ("try invoke "+CoreCommonType.ToString());
+        var result=CoreCommonType.InvokeMember("GetKeys", BindingFlags.InvokeMethod, null, null, null);
+    }
+*/
+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// All properties generation for entity classes or complex types.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GenerateAllProperties(BaseClass cls,List<Property> allProperties) {
+        WriteDebugLog ("GenerateAllProperties called cout="+allProperties.Count);
+
+        if (allProperties.Count == 0)
+            return;
+#>
+
+        #region Properties
+<#+
+        WriteDebugLog ("call ReadCSDLFile file="+allProperties[0].Model.FullFileName);
+        var xml = ReadCSDLFile(allProperties[0].Model.FullFileName);
+        //WriteDebugLog ("call LoadAssembly");
+        //LoadAssembly();
+        //WriteDebugLog ("call LoadAssembly done... ");
+        foreach (Property property in allProperties) {
+            WriteDebugLog ("Call GenerateProperty "+property.ToString());
+            GenerateProperty(cls, property, xml);
+            WriteDebugLog ("Called GenerateProperty "+property.ToString());
+        }
+
+#>
+
+        #endregion
+<#+
+    }
+#>
+<#+
+  //////////////////////////////////////////////////////////////////////////////////
+  //
+  // Method GenerateDocumentation()
+  // Documentation comments generation for entity classes, complex types, and properties.
+  //
+  //////////////////////////////////////////////////////////////////////////////////
+  private void GenerateDocumentation(Documentation doc, string name) {
+#>
+
+    /// <summary>
+<#+
+    if (!string.IsNullOrEmpty(doc.Summary)) {
+      foreach (string str in doc.Summary.Split('\n')) {
+#>
+    /// <#= str.TrimEnd('\r') #>
+<#+
+      }
+    }
+    else {
+#>
+    /// There are no comments for <#= name #> in the schema.
+<#+
+    }
+#>
+    /// </summary>
+<#+
+    if (!string.IsNullOrEmpty(doc.LongDescription)) {
+#>
+    /// <LongDescription>
+<#+
+      foreach (string str in doc.LongDescription.Split('\n')) {
+#>
+    /// <#= str.TrimEnd('\r') #>
+<#+
+      }
+#>
+    /// </LongDescription>
+<#+
+    }
+  }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Property generation for entity classes or complex types.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+
+    private void GenerateProperty(BaseClass cls,Property property, XDocument doc) {
+        WriteDebugLog ("GenerateProperty called"+property.ToString());
+
+		output.Indent++;
+        WriteDebugLog("call GenerateDocumentation");
+		GenerateDocumentation(property.Documentation, property.Name);
+		output.Indent--;
+
+        string currentPropertyType = GetPropertyDtoType(property);
+        WriteDebugLog("call GenerateCustomAttributesIfNeeded");
+        GenerateCustomAttributesIfNeeded(property.Attributes, 8);
+
+        WriteDebugLog("call GenerateJsonNullValueHandling");
+        GenerateJsonNullValueHandling(cls,property);
+        WriteDebugLog("call GeneratePropertyValidationAttributes");
+        GeneratePropertyValidationAttributes(property);
+        WriteDebugLog("call GeneratePropertyGroupingAttribute");
+        GeneratePropertyGroupingAttribute(property as EntityProperty);
+        //LookupFilterKeysAttributes
+        WriteDebugLog("call GenerateLookupFilterKeysAttribute");
+        GenerateLookupFilterKeysAttribute(property as EntityProperty, doc);
+        WriteDebugLog("call GenerateDisplayNameAttributeIfNeeded");
+        GenerateDisplayNameAttributeIfNeeded(property);
+        WriteDebugLog("call GenerateDomainNameForRevisionAttribute");
+        GenerateDomainNameForRevisionAttribute(property);
+        WriteDebugLog("call GenerateWcfDataMemberAttributeIfNeeded");
+        GenerateWcfDataMemberAttributeIfNeeded();
+
+		var rawInheritanceModifier = property.GetProperty("DtoInheritanceModifier");
+		string inheritanceModifier = codeProvider.FormatMemberInheritanceModifier((MemberInheritanceModifier)rawInheritanceModifier);
+		if (!string.IsNullOrEmpty(inheritanceModifier))
+		{
+			inheritanceModifier = " " + inheritanceModifier;
+		}
+#>
+        public<#= inheritanceModifier #> <#=        currentPropertyType #> <#=        codeProvider.GetValidIdentifier(property.Name) #> { get; set; }
+<#+
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Get DTO equivalent type for property type.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private string GetPropertyDtoType(Property property) {
+
+        if (property.Type is ICodeElement) {
+            if (property.IsComplexType) {
+                ComplexType complexType = (ComplexType)property.Type;
+                return DtoClassNamePrefix + GetValidClassName(complexType) + DtoClassNameSuffix;
+            }
+            else
+                return FormatNullableType(property.Nullable, GetCodeElementReference((ICodeElement)property.Type));
+        }
+        else
+            return FormatNullableType(property.Nullable, property.Type);
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// All generatable properties.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private List<Property> GetActiveProperties(BaseClass cls) {
+
+        ICollection<Property> allProperties;
+
+        Class realClass = cls as Class;
+        if (realClass != null)
+            allProperties = realClass.AllProperties;
+        else
+            allProperties = cls.Properties;
+
+        var activeProperties = allProperties
+            .Where(prop => (bool)prop.GetProperty("GenerateDTO") &&
+            (!prop.IsComplexType || (bool)((ComplexType)prop.Type).GetProperty("GenerateDTO")))
+            .ToList();
+
+        return activeProperties;
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// All relation properties generation for entity classes.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GenerateAllRelationProperties(BaseClass cls, List<RelationProperty> relationProperties) {
+            WriteDebugLog ("GenerateAllRelationProperties called");
+
+        if (relationProperties.Count == 0)
+            return;
+#>
+
+        #region Navigation Properties
+<#+
+
+        foreach (RelationProperty relationProperty in relationProperties)
+            GenerateRelationProperty(cls,relationProperty);
+
+#>
+
+        #endregion
+<#+
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Relation property generation for entity classes.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GenerateRelationProperty(BaseClass cls, RelationProperty relationProperty) {
+
+#>
+
+<#+
+        string currentPropertyType = GetRelationPropertyDtoType(relationProperty);
+
+        GenerateRelationWcfDataContractAttributes(relationProperty);
+
+#>
+        /// <summary />
+<#+
+        GenerateJsonNullValueHandlingForRelation(cls, relationProperty);
+#>
+        public <#=        currentPropertyType #> <#=        codeProvider.GetValidIdentifier(relationProperty.Name) #> { get; set; }
+<#+
+
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Get DTO equivalent type for relation property type.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private string GetRelationPropertyDtoType(RelationProperty relationProperty) {
+
+        string currentPropertyType;
+        if (UseDtoClassesInAssociations)
+            currentPropertyType = GetDtoClassName(relationProperty.RelationClass);
+        else
+            if (this.ExistingDtosWithComplexPk.Contains(relationProperty.RelationClass))
+            currentPropertyType = GetDtoClassName(relationProperty.RelationClass);
+        else
+            if (this.NewDtosWithComplexPk.Contains(relationProperty.RelationClass))
+            currentPropertyType = GetDtoKeyClassName(relationProperty.RelationClass);
+        else {
+            Property prop = GetOtherKeyProperties(relationProperty).Single();
+            currentPropertyType = GetPropertyDtoType(prop);
+        }
+
+        if (relationProperty.Multiplicity == Multiplicity.Many)
+            currentPropertyType = "List<" + currentPropertyType + ">";
+
+        return currentPropertyType;
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Get other key properties for relation property.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private List<Property> GetOtherKeyProperties(RelationProperty relationProperty) {
+
+        return GetKeyProperties(relationProperty.RelationClass);
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Get key properties for class.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private List<Property> GetKeyProperties(BaseClass cls) {
+
+        return cls.Properties
+            .Where(prop => prop.PrimaryKey)
+            .ToList();
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// All generatable relation properties.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private List<RelationProperty> GetActiveRelationProperties(BaseClass baseClass) {
+
+        Class cls = baseClass as Class;
+
+        if (cls == null)
+            return new List<RelationProperty>();
+
+        var relationProperties = cls.RelationProperties
+            .Where(rp => rp.Generate &&
+            (bool)rp.GetProperty("GenerateDTO") &&
+            (bool)rp.Association.GetProperty("GenerateDTO"));
+
+        if (UseDtoClassesInAssociations) {
+            return relationProperties
+                .Where(rp => (bool)rp.RelationClass.GetProperty("GenerateDTO"))
+                .ToList();
+        }
+        else {
+            List<RelationProperty> activeRelations = new List<RelationProperty>();
+            foreach (RelationProperty rp in relationProperties) {
+                if (rp.Multiplicity == Multiplicity.Many) {
+                    var otherKeyProperties = GetOtherKeyProperties(rp);
+                    if (otherKeyProperties.Count == 0) {
+                        if ((bool)rp.RelationClass.GetProperty("GenerateDTO")) {
+                            activeRelations.Add(rp);
+                            if (!this.ExistingDtosWithComplexPk.Contains(rp.RelationClass))
+                                this.ExistingDtosWithComplexPk.Add(rp.RelationClass);
+                        }
+                    }
+                    else {
+                        activeRelations.Add(rp);
+                        if (otherKeyProperties.Count > 1)
+                            if (!this.NewDtosWithComplexPk.Contains(rp.RelationClass))
+                                this.NewDtosWithComplexPk.Add(rp.RelationClass);
+                    }
+                }
+            }
+            return activeRelations;
+        }
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Get DTO class name.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private string GetDtoClassName(BaseClass cls) {
+
+        return DtoClassNamePrefix + GetValidClassName(cls) + DtoClassNameSuffix;
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Get DTO key class name.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private string GetDtoKeyClassName(BaseClass cls) {
+
+        return DtoClassNamePrefix + GetValidClassName(cls) + "Key" + DtoClassNameSuffix;
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// WCF Data Contract DataContract attribute generation.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GenerateWcfDataContractAttributeIfNeeded() {
+
+        if (WcfDataContractAttributes) {
+#>
+    [DataContractAttribute(IsReference=true)]
+<#+
+        }
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// WCF Data Contract DataMember attribute generation.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GenerateWcfDataMemberAttributeIfNeeded() {
+
+        if (WcfDataContractAttributes) {
+#>
+        [DataMember]
+<#+
+        }
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    //
+    // Method GenerateRelationWcfDataContractAttributes()
+    // WCF Data Contract attributes generation for relation property.
+    //
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GenerateRelationWcfDataContractAttributes(RelationProperty relationProperty) {
+
+        if (WcfDataContractAttributes) {
+            if (relationProperty.Multiplicity == Multiplicity.Many &&
+                (WcfDataMemberOnNavigationProperties == WcfDataMemberGenerationBehavior.ManyEnd ||
+                WcfDataMemberOnNavigationProperties == WcfDataMemberGenerationBehavior.All) ||
+                relationProperty.Multiplicity != Multiplicity.Many &&
+                (WcfDataMemberOnNavigationProperties == WcfDataMemberGenerationBehavior.OneEnd ||
+            WcfDataMemberOnNavigationProperties == WcfDataMemberGenerationBehavior.All)) {
+#>
+        [DataMember]
+<#+
+            }
+        }
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Converter file header generation.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GenerateConverterFileHeader() {
+
+        GenerateFileHeaderWarning();
+#>
+using System.Collections.Generic;
+using System.Linq;
+<#+
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Converter copying method code generation.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void ConverterSingleObjectCopyMethod(List<Property> allProperties, List<RelationProperty> relationProperties, string singleObjectConvertionMethod, string sourceClassName, string targetClassName, string onMethodName) {
+#>
+    /// <summary/>
+        public static <#=        targetClassName #> <#=        singleObjectConvertionMethod #>(this <#=        sourceClassName #> source)
+        {
+            if (source == null)
+              return null;
+
+            var target = new <#=        targetClassName #>();
+<#+
+        ConverterCopyProperties(allProperties, singleObjectConvertionMethod);
+
+        if (!string.IsNullOrEmpty(onMethodName)) {
+#>
+
+            // User-defined partial method
+            <#=            onMethodName #>(source, target);
+<#+
+        }
+#>
+
+            return target;
+        }
+<#+
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Converter properties copying code generation.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void ConverterCopyProperties(List<Property> allProperties, string complexTypeConvertionMethod) {
+
+        if (allProperties.Count == 0)
+            return;
+#>
+
+            // Properties
+<#+
+
+        foreach (Property prop in allProperties) {
+            string propertyName = codeProvider.GetValidIdentifier(prop.Name);
+#>
+            target.<#=            propertyName #> = source.<#=            propertyName #><#=            prop.IsComplexType ? "." + complexTypeConvertionMethod + "()" : string.Empty #>;
+<#+
+        }
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Converter copying method code generation.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void ConverterSingleObjectWithRelatedCopyMethod(List<Property> allProperties, List<RelationProperty> relationProperties, string complexTypeConvertionMethod, string singleObjectConvertionMethod, string collectionConvertionMethod, string sourceClassName, string targetClassName, string onMethodName) {
+#>
+
+    /// <summary/>
+        public static <#=        targetClassName #> <#=        singleObjectConvertionMethod #>(this <#=        sourceClassName #> source, int level)
+        {
+            if (source == null)
+              return null;
+
+            var target = new <#=        targetClassName #>();
+<#+
+        ConverterCopyProperties(allProperties, complexTypeConvertionMethod);
+        ConverterCopyRelationProperties(relationProperties, singleObjectConvertionMethod, collectionConvertionMethod);
+
+        if (!string.IsNullOrEmpty(onMethodName)) {
+#>
+
+            // User-defined partial method
+            <#=            onMethodName #>(source, target);
+<#+
+        }
+#>
+
+            return target;
+        }
+<#+
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Converter navigation properties copying code generation.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void ConverterCopyRelationProperties(List<RelationProperty> relationProperties, string singleObjectConvertionMethod, string collectionConvertionMethod) {
+
+        if (relationProperties.Count == 0)
+            return;
+#>
+
+            // Navigation Properties
+            if (level > 0) {
+<#+
+
+        foreach (RelationProperty rp in relationProperties) {
+            string propertyName = codeProvider.GetValidIdentifier(rp.Name);
+#>
+              target.<#=            propertyName #> = source.<#=            propertyName #><#+
+
+            if (UseDtoClassesInAssociations || this.ExistingDtosWithComplexPk.Contains(rp.RelationClass)) {
+                string convertionMethod = rp.Multiplicity == Multiplicity.Many ? collectionConvertionMethod : singleObjectConvertionMethod;
+        #>.<#=                convertionMethod #>(level - 1);
+<#+
+            }
+            else {
+                if (!this.NewDtosWithComplexPk.Contains(rp.RelationClass)) {
+                    Property idProperty = GetOtherKeyProperties(rp).Single();
+                    string idPropertyName = codeProvider.GetValidIdentifier(idProperty.Name);
+          #>
+
+                  .Select(src => src.<#=                    idPropertyName #>)
+                  .ToList();
+<#+
+                }
+                else {
+                    string convertionMethod = rp.Multiplicity == Multiplicity.Many ? "ToDtoKeys" : "ToDtoKey";
+          #>.<#=                    convertionMethod #>();
+<#+
+                }
+            }
+        }
+#>
+            }
+<#+
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Converter copying method code generation.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void ConverterCollectionCopyMethod(BaseClass cls, string methodName, string singleMethodName, string sourceClassName, string targetClassName) {
+#>
+
+    /// <summary/>
+        public static List<<#=        targetClassName #>> <#=        methodName #>(this IEnumerable<<#=        sourceClassName #>> source)
+        {
+            if (source == null)
+              return null;
+
+            var target = source
+              .Select(src => src.<#=        singleMethodName #>())
+              .ToList();
+
+            return target;
+        }
+<#+
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Converter copying method code generation.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void ConverterCollectionWithRelatedCopyMethod(BaseClass cls, string methodName, string singleMethodName, string sourceClassName, string targetClassName) {
+#>
+
+    /// <summary/>
+        public static List<<#=        targetClassName #>> <#=        methodName #>(this IEnumerable<<#=        sourceClassName #>> source, int level)
+        {
+            if (source == null)
+              return null;
+
+            var target = source
+              .Select(src => src.<#=        singleMethodName #>(level))
+              .ToList();
+
+            return target;
+        }
+<#+
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    //
+    // Utility methods
+    //
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Method GetCodeElementReference
+    private string GetCodeElementReference(ICodeElement element) {
+
+        if (!string.IsNullOrEmpty(element.Namespace) && element.Namespace != model.GetDefaultNamespace())
+            return codeProvider.GetValidIdentifier(element.Namespace) + "." + codeProvider.GetValidIdentifier(element.Name);
+
+        if (!string.IsNullOrEmpty(DtoNamespace))
+            return codeProvider.GetValidIdentifier(model.GetDefaultNamespace()) + "." + codeProvider.GetValidIdentifier(element.Name);
+
+        return codeProvider.GetValidIdentifier(element.Name);
+    }
+
+    // Method GetVariableName()
+    private string GetVariableName(string name) {
+
+        return codeProvider.GetValidIdentifier(name.Substring(0, 1).ToLower() + name.Substring(1));
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Generates mapping method for entity classes or complex types.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GenerateMappingMethods(BaseClass cls, string className, List<Property> properties, List<RelationProperty> relationProperties) {
+#>
+
+        System.Type RIB.Visual.Platform.Core.IDto.EntityType
+        {
+            get { return typeof(<#= cls.Name #>); }
+        }
+
+        /// <summary>
+        /// Copy the current <#=        className #> instance to a new <#=        cls.Name #> instance.
+        /// </summary>
+        /// <returns>a new instance of class <#=        cls.Name #></returns>
+        public <#=        cls.Name #> Copy()
+        {
+          var entity = new <#=        cls.Name #>();
+
+<#+
+        var primitiveProperties = properties.Where(p=>!p.IsComplexType).ToList();
+
+        foreach (Property prop in primitiveProperties) {
+#>
+          entity.<#=            codeProvider.GetValidIdentifier(prop.Name) #> = this.<#=            codeProvider.GetValidIdentifier(prop.Name) #>;
+<#+
+        }
+#>
+<#+
+        var dtoComplexProperties = properties.Where(p=>p.IsComplexType).ToList();
+
+        foreach (Property dtoProp in dtoComplexProperties) {
+            var complexCls = model.ComplexTypes.Where(complexType => complexType.Name == dtoProp.Type.ToString()).Cast<BaseClass>().FirstOrDefault();
+
+#>
+
+          if (this.<#=            codeProvider.GetValidIdentifier(dtoProp.Name) #> != null )
+          {
+
+<#+            // we check if the complex type DescriptionTranslateType is selected, then we use specific copy function
+            // rei add 4.8.2014
+            string t=(string)dtoProp.Type.ToString();
+            if (t.Equals ("DescriptionTranslateType"))  { #>
+               entity.<#=                codeProvider.GetValidIdentifier(dtoProp.Name) #> = new <#=                dtoProp.Type #>(this.<#=                codeProvider.GetValidIdentifier(dtoProp.Name) #>);
+<#+            } else {
+                // else everything remain original
+#>
+
+            entity.<#=                codeProvider.GetValidIdentifier(dtoProp.Name) #> = new <#=                dtoProp.Type #>();
+<#+
+                var activeProperties = GetActiveProperties (complexCls);
+                foreach (var property in activeProperties) {
+#>
+            entity.<#=                    codeProvider.GetValidIdentifier(dtoProp.Name) #>.<#=                    property.Name #> = this.<#=                    codeProvider.GetValidIdentifier(dtoProp.Name) #>.<#=                    property.Name #>;
+<#+
+                }
+#>
+<#+            }#>
+          }
+<#+
+        }
+#>
+
+            // call partial method if implemented
+            OnCopy(entity);
+
+          return entity;
+        }
+
+		/// <summary> prototypes for partial OnCopy Method </summary>
+		/// <param name="entity"></param>
+        partial void OnCopy(<#=        cls.Name #> entity);
+
+
+		/// <summary> prototypes for partial OnConstruct Method </summary>
+		/// <param name="entity"></param>
+        partial void OnConstruct(<#=        cls.Name #> entity);
+<#+
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Gets valid class name without suffix 'Entity' for entity classes or complex types.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private string GetValidClassName(BaseClass cls) {
+
+        var className = cls.Name;
+        int index = cls.Name.LastIndexOf("Entity");
+        if (index != -1) {
+            className = cls.Name.Substring(0, index);
+        }
+
+        return className;
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Generate partial methods for plain DTO classes.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GeneratePartialMethods(BaseClass cls) {
+#>
+
+        ///// <summary/>
+        //partial void OnCopy(<#=        cls.Name #> entity)
+        //{
+        //}
+
+        ///// <summary/>
+        //partial void OnConstruct(<#=        cls.Name #> entity)
+        //{
+        //}
+
+
+<#+
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Generates fields for proxy DTO.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GenerateProxyFields(BaseClass cls) {
+#>
+        private <#=        cls.Name #> _entity;
+
+<#+
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Generates fields for proxy DTO.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GenerateAllConstructors4ProxyDTO(BaseClass cls, string className) {
+#>
+        /// <summary>
+        /// Initializes an instance of class <#=        className #>.
+        /// </summary>
+        /// <param name="entity">the instance of class <#=        cls.Name #></param>
+        public <#=        className #>(<#=        cls.Name #> entity)
+        {
+          _entity = entity;
+        }
+
+<#+
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// All properties generation for proxy DTO class.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GenerateAllProperties4ProxyDTO(List<Property> allProperties) {
+
+        if (allProperties.Count == 0)
+            return;
+#>
+
+        #region Properties
+
+<#+
+
+        foreach (Property property in allProperties)
+            GenerateProperty4ProxyDTO(property);
+
+#>
+
+        #endregion
+<#+
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Property generation for proxy DTO class.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GenerateProperty4ProxyDTO(Property property) {
+        if (property.IsComplexType)
+            return;
+
+#>
+
+        /// <summary>
+        /// Gets or Sets <#=        codeProvider.GetValidIdentifier(property.Name) #>.
+        /// </summary>
+<#+
+        string currentPropertyType = GetPropertyDtoType(property);
+        GenerateCustomAttributesIfNeeded(property.Attributes, 8);
+        GeneratePropertyValidationAttributes(property);
+        GenerateDisplayNameAttributeIfNeeded(property);
+        GenerateWcfDataMemberAttributeIfNeeded();
+#>
+        public <#=        currentPropertyType #> <#=        codeProvider.GetValidIdentifier(property.Name) #>
+        {
+           get { return _entity.<#=        codeProvider.GetValidIdentifier(property.Name) #>; }
+           set { _entity.<#=        codeProvider.GetValidIdentifier(property.Name) #> = value; }
+        }
+<#+
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Generates user partial class file header.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GenerateUserPartialClassFileHeader() {
+#>
+/*
+ * $Id$
+ * Copyright (c) RIB Software AG
+ *
+ */
+<#+
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Generates custom attributes for class, property, etc.
+    /// </summary>
+    /// <param name="attributes">A list of attributes</param>
+    /// <param name="indent">Indent, for class level, it's suggested to set to 4, for property level, it's suggested to set to 8</param>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GenerateCustomAttributesIfNeeded(IList attributes, uint indent) {
+#>
+<#+
+        if (attributes != null) {
+            foreach(AttributeValue attribute in attributes) {
+                output.AddReference(attribute.Constructor.AttributeType.Assembly.FromGAC ? attribute.Constructor.AttributeType.Assembly.Name : attribute.Constructor.AttributeType.Assembly.Path);
+
+                string attributeString = string.Empty;
+                for (uint i=0; i < indent; i++) {
+                    attributeString += " ";
+                }
+
+                attributeString += codeProvider.FormatAttributeValue(attribute);
+#>
+<#=                attributeString #>
+<#+
+            }
+        }
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Generates GenerateJsonNullValueHandling
+    /// </summary>
+    /// <param name="cls">Basecls</param>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GenerateJsonNullValueHandling(BaseClass cls,Property property) {
+
+        string attributeString = string.Empty; // "    // [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]";
+        // string JsonNullValueHandling = cls==null? "basecls is null" : cls.GetProperty("JsonNullValueHandling").ToString();
+
+        if (property.Nullable && (cls!=null) && (JsonNullValueHandling || (bool)cls.GetProperty("JsonNullValueHandling"))) {
+            attributeString = "        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]";
+#>
+<#=            attributeString #>
+<#+        }
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Generates GenerateJsonNullValueHandling
+    /// </summary>
+    /// <param name="cls">Basecls</param>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GenerateJsonNullValueHandlingForRelation(BaseClass cls,RelationProperty relationProperties) {
+
+        string attributeString = string.Empty; // "    // [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]";
+        // string JsonNullValueHandling = cls==null? "basecls is null" : cls.GetProperty("JsonNullValueHandling").ToString();
+
+        if ((cls!=null) && (JsonNullValueHandlingNavProp ||(bool)cls.GetProperty("JsonNullValueHandlingNavProp"))) {
+            attributeString = "        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]";
+#>
+<#=            attributeString #>
+<#+        }
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Generates DisplayNameAttribute for the incoming property.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GenerateDisplayNameAttributeIfNeeded(Property property) {
+#>
+<#+
+        if (!string.IsNullOrEmpty(property.DisplayName)) {
+#>
+        [System.ComponentModel.DisplayName("<#=            property.DisplayName #>")]
+<#+
+        }
+#>
+<#+
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Generates DomainName attributes for the revision properties:
+    ///       InsertedAt,UpdatedAt,InsertedBy,UpdatedBy,Version
+    ///
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private void GenerateDomainNameForRevisionAttribute(Property property) {
+#>
+<#+
+        if (property.Name.Equals("InsertedAt") || property.Name.Equals("UpdatedAt") )
+        {
+#>
+        [RIB.Visual.Platform.Common.DomainName(Name = @"date")]
+<#+
+        }
+#>
+<#+
+        if (property.Name.Equals("InsertedBy") || property.Name.Equals("UpdatedBy") || property.Name.Equals("Version"))
+        {
+#>
+        [RIB.Visual.Platform.Common.DomainName(Name = @"integer")]
+<#+
+        }
+#>
+<#+
+    }
+#>
+<#+
+    //////////////////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// Formats nullable types.
+    /// </summary>
+    //////////////////////////////////////////////////////////////////////////////////
+    private string FormatNullableType(bool nullable, object targetType) {
+
+        string retType = codeProvider.GetNullableType(nullable, targetType);
+
+        if (nullable) {
+            const string nullablePrefix = "System.Nullable<";
+            const string globalNullablePrefix = "global::System.Nullable<";
+            const string nullableSuffix = ">";
+            if (retType.StartsWith(globalNullablePrefix) && retType.EndsWith(nullableSuffix))
+            {
+                //e.g. change "global::System.Nullable<Int32>" to "Int32?"
+                retType = retType.Substring(globalNullablePrefix.Length, retType.Length-globalNullablePrefix.Length-nullableSuffix.Length) + "?";
+            }
+            else if (retType.StartsWith(nullablePrefix) && retType.EndsWith(nullableSuffix))
+            {
+                //e.g. change "System.Nullable<Int32>" to "Int32?"
+                retType = retType.Substring(nullablePrefix.Length, retType.Length-nullablePrefix.Length-nullableSuffix.Length) + "?";
+            }
+        else if (retType.Equals("global::System.DateTime?") )
+        {
+          //e.g. change "System.Nullable<Int32>" to "Int32?"
+          retType ="System.DateTime?";
+        }
+      } else {
+        if (retType.Equals("global::System.DateTime") )
+        {
+          retType ="System.DateTime";
+        }
+	  }
+      return retType;
+    }
+
+  private void WriteDebugLog(string msg, bool append=true){
+        //string debugoutfile="datatransferobject.t4.log";  //  @"c:\temp\datatransferobject.log"; 
+        string debugoutfile=@"c:\temp\datatransferobject.t4.log"; 
+        bool debug=false;
+        if (!debug) return;
+        StreamWriter file = new StreamWriter(debugoutfile, append);
+        var _msg= string.Format("[{0}] {1}",DateTime.Now.ToString("yyyy.MM.dd HH:mm.ss.ffff"),msg);
+        file.WriteLine(_msg);
+        file.Close();
+  }
+#>

@@ -1,0 +1,15 @@
+
+::
+:: http://rib-s-svn01:81/svn/repos/RIBvisual/trunk/Cloud/Development/Common/Common.BusinessComponents/EntityModel
+:: http://rib-s-svn01:81/svn/repos/RIBvisual/trunk/BinPool/BuildTools/T4.Templates
+::
+:: multiple externals see http://sysadminnotebook.blogspot.de/2012/02/set-svn-svnexternals-in-command-line.html
+::
+:: set cd into the business component directory 
+:: copy the file CreateT4.Links.Cmd into this directory.
+::  delete in the businesscomponent directory the T4 template files with subversion delete, commit this change to subversion
+::  execute the script file CreateT4.Links.Cmd
+::  call svn update, the T$ Template file should appear in the folder again.
+::  commit change to subversion.
+
+:: 2014.07.17 by Rolf Eisenhut

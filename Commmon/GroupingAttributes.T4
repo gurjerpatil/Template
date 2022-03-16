@@ -1,0 +1,826 @@
+<#@ template language="C#" #>
+<#+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttribute(EntityProperty property)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttribute(EntityProperty property) {
+		EntityClass cls = property.ParentClass as EntityClass;
+		if (!property.IsComplexParent && cls != null && ClassSupportsGrouping(cls)) {
+			switch(cls.Name) {
+				case "BidHeaderEntity": GeneratePropertyGroupingAttributeForBidHeaderEntity(property, cls); break;
+				case "BilHeaderEntity": GeneratePropertyGroupingAttributeForBilHeaderEntity(property, cls); break;
+				case "WicCatGroupEntity": GeneratePropertyGroupingAttributeForWicCatGroupEntity(property, cls); break;
+				case "BusinessPartnerEntity": GeneratePropertyGroupingAttributeForBusinessPartnerEntity(property, cls); break;
+				case "ConHeaderEntity": GeneratePropertyGroupingAttributeForConHeaderEntity(property, cls); break;
+				case "DfmDefectEntity": GeneratePropertyGroupingAttributeForDfmDefectEntity(property, cls); break;
+				case "EstLineItemEntity": GeneratePropertyGroupingAttributeForEstLineItemEntity(property, cls); break;
+				case "InvHeaderEntity": GeneratePropertyGroupingAttributeForInvHeaderEntity(property, cls); break;
+				case "ControllingUnitEntity": GeneratePropertyGroupingAttributeForControllingUnitEntity(property, cls); break;
+				case "MaterialEntity": GeneratePropertyGroupingAttributeForMaterialEntity(property, cls); break;
+				case "ModelObjectEntity": GeneratePropertyGroupingAttributeForModelObjectEntity(property, cls); break;
+				case "ChangeSetEntity": GeneratePropertyGroupingAttributeForChangeSetEntity(property, cls); break;
+				case "ObjectUnitEntity": GeneratePropertyGroupingAttributeForObjectUnitEntity(property, cls); break;
+				case "OrdHeaderEntity": GeneratePropertyGroupingAttributeForOrdHeaderEntity(property, cls); break;
+				case "QuoteHeaderEntity": GeneratePropertyGroupingAttributeForQuoteHeaderEntity(property, cls); break;
+				case "QtoHeaderEntity": GeneratePropertyGroupingAttributeForQtoHeaderEntity(property, cls); break;
+				case "PesHeaderEntity": GeneratePropertyGroupingAttributeForPesHeaderEntity(property, cls); break;
+				case "PrcPackageEntity": GeneratePropertyGroupingAttributeForPrcPackageEntity(property, cls); break;
+				case "ChangeEntity": GeneratePropertyGroupingAttributeForChangeEntity(property, cls); break;
+				case "InfoRequestEntity": GeneratePropertyGroupingAttributeForInfoRequestEntity(property, cls); break;
+				case "ProjectEntity": GeneratePropertyGroupingAttributeForProjectEntity(property, cls); break;
+				case "ActivityEntity": GeneratePropertyGroupingAttributeForActivityEntity(property, cls); break;
+				case "ReqHeaderEntity": GeneratePropertyGroupingAttributeForReqHeaderEntity(property, cls); break;
+				case "RfqHeaderEntity": GeneratePropertyGroupingAttributeForRfqHeaderEntity(property, cls); break;
+				case "RequisitionEntity": GeneratePropertyGroupingAttributeForRequisitionEntity(property, cls); break;
+				case "TrsRouteEntity": GeneratePropertyGroupingAttributeForTrsRouteEntity(property, cls); break;
+				case "WipHeaderEntity": GeneratePropertyGroupingAttributeForWipHeaderEntity(property, cls); break;
+				case "DocumentEntity": GeneratePropertyGroupingAttributeForDocumentEntity(property, cls); break;
+				case "PPSItemEntity": GeneratePropertyGroupingAttributeForPpsItemEntity(property, cls); break;
+				case "PPSItemVEntity": GeneratePropertyGroupingAttributeForPpsItemVEntity(property, cls); break;
+				case "ProductEntity": GeneratePropertyGroupingAttributeForPpsProductEntity(property, cls); break;
+				case "ReservationEntity": GeneratePropertyGroupingAttributeForReservationEntity(property, cls); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForBidHeaderEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForBidHeaderEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				case "BAS_RUBRIC_CATEGORY_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.RubricCategory"); break;
+				case "PRJ_CHANGE_FK": GeneratePropertyGroupingAttributeForEntity("Change.Main.Change"); break;
+				case "EST_HEADER_FK": GeneratePropertyGroupingAttributeForEntity("Estimate.Main.Estimate"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForBilHeaderEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForBilHeaderEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "BAS_RUBRIC_CATEGORY_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.RubricCategory"); break;
+				case "PRJ_CHANGE_FK": GeneratePropertyGroupingAttributeForEntity("Change.Main.Change"); break;
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				case "MDC_CONTROLLINGUNIT_FK": GeneratePropertyGroupingAttributeForEntity("Controlling.Structure.ControllingUnit"); break;
+				case "PRC_STRUCTURE_FK": GeneratePropertyGroupingAttributeForEntity("Basics.ProcurementStructure.Structure"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForWicCatGroupEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForWicCatGroupEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForBusinessPartnerEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForBusinessPartnerEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForConHeaderEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForConHeaderEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "CON_STATUS_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.ContractStatus"); break;
+				case "PRC_PACKAGE_FK": GeneratePropertyGroupingAttributeForEntity("Procurement.Package.Package"); break;
+				case "PRJ_CHANGE_FK": GeneratePropertyGroupingAttributeForEntity("Change.Main.Change"); break;
+				case "MDC_CONTROLLINGUNIT_FK": GeneratePropertyGroupingAttributeForEntity("Controlling.Structure.ControllingUnit"); break;
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForDfmDefectEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForDfmDefectEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "BAS_DEFECT_TYPE_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.DefectType"); break;
+				case "DFM_GROUP_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.DefectGroup"); break;
+				case "PRJ_LOCATION_FK": GeneratePropertyGroupingAttributeForEntity("Project.Location.Location"); break;
+				case "PSD_ACTIVITY_FK": GeneratePropertyGroupingAttributeForEntity("Scheduling.Main.Activity"); break;
+				case "MDC_CONTROLLINGUNIT_FK": GeneratePropertyGroupingAttributeForEntity("Controlling.Structure.ControllingUnit"); break;
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				case "PRC_STRUCTURE_FK": GeneratePropertyGroupingAttributeForEntity("Basics.ProcurementStructure.Structure"); break;
+				case "BAS_DEFECT_PRIORITY_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.DefectPriority"); break;
+				case "BAS_DEFECT_SEVERITY_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.DefectSeverity"); break;
+				case "DFM_STATUS_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.DefectStatus"); break;
+				case "BAS_RUBRIC_CATEGORY_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.RubricCategory"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForEstLineItemEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForEstLineItemEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "MDC_CONTROLLINGUNIT_FK": GeneratePropertyGroupingAttributeForEntity("Controlling.Structure.ControllingUnit"); break;
+				case "BOQ_ITEM_FK": GeneratePropertyGroupingAttributeWithRef1ForEntity("Boq.Main.BoqItem", "BOQ_HEADER_FK"); break;
+				case "WIC_BOQ_ITEM_FK": GeneratePropertyGroupingAttributeWithRef1ForEntity("Boq.Main.WicBoqItem", "WIC_BOQ_HEADER_FK"); break;
+				case "BOQ_WIC_CAT_FK": GeneratePropertyGroupingAttributeForEntity("Boq.Wic.WicCatGroup"); break;
+				case "LIC_COSTGROUP1_FK": GeneratePropertyGroupingAttributeForEntity("Basics.CostGroups.CostGroup01"); break;
+				case "PRJ_COSTGROUP2_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.CostGroup02"); break;
+				case "PRJ_COSTGROUP3_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.CostGroup03"); break;
+				case "PRJ_COSTGROUP4_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.CostGroup04"); break;
+				case "PRJ_COSTGROUP5_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.CostGroup05"); break;
+				case "PRJ_LOCATION_FK": GeneratePropertyGroupingAttributeForEntity("Project.Location.Location"); break;
+				case "PRC_STRUCTURE_FK": GeneratePropertyGroupingAttributeForEntity("Basics.ProcurementStructure.Structure"); break;
+				case "PRJ_CHANGE_FK":
+					GeneratePropertyGroupingAttributeForEntity("Change.Main.Change", "prjchangefk");
+					GeneratePropertyGroupingAttributeForEntity("Change.Main.ChangeStatus", "prjchangestatusfk");
+					break;
+				case "MDC_COST_CODE_FK": GeneratePropertyGroupingAttributeForEntity("Basics.CostCodes.CostCode"); break;
+				case "PRJ_SORTCODE01_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.SortCode01"); break;
+				case "PRJ_SORTCODE02_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.SortCode02"); break;
+				case "PRJ_SORTCODE08_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.SortCode08"); break;
+				case "PRJ_SORTCODE09_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.SortCode09"); break;
+				case "PRJ_SORTCODE10_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.SortCode10"); break;
+				case "PRJ_SORTCODE07_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.SortCode07"); break;
+				case "PRJ_SORTCODE04_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.SortCode04"); break;
+				case "PRJ_SORTCODE05_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.SortCode05"); break;
+				case "PRJ_COSTGROUP1_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.CostGroup01"); break;
+				case "EST_HEADER_FK":
+					GeneratePropertyGroupingAttributeForEntity("Estimate.Main.Estimate");
+					GeneratePropertyGroupingAttributeForEntity("Estimate.Main.ProjectNo", "ProjectNo");
+					GeneratePropertyGroupingAttributeForEntity("Estimate.Main.ProjectName", "ProjectName");
+					break;
+				case "PSD_ACTIVITY_FK": GeneratePropertyGroupingAttributeForEntity("Scheduling.Main.Activity"); break;
+				case "PRC_PACKAGE_FK": GeneratePropertyGroupingAttributeForEntity("Procurement.Package.Package"); break;
+				case "PRJ_SORTCODE03_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.SortCode03"); break;
+				case "PRJ_SORTCODE06_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.SortCode06"); break;
+				case "MDC_ASSET_MASTER_FK": GeneratePropertyGroupingAttributeForEntity("Basics.AssetMaster.AssetMaster"); break;
+				case "LIC_COSTGROUP4_FK": GeneratePropertyGroupingAttributeForEntity("Basics.CostGroups.CostGroup04"); break;
+				case "LIC_COSTGROUP3_FK": GeneratePropertyGroupingAttributeForEntity("Basics.CostGroups.CostGroup03"); break;
+				case "LIC_COSTGROUP2_FK": GeneratePropertyGroupingAttributeForEntity("Basics.CostGroups.CostGroup02"); break;
+				case "LIC_COSTGROUP5_FK": GeneratePropertyGroupingAttributeForEntity("Basics.CostGroups.CostGroup05"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForInvHeaderEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForInvHeaderEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "INV_STATUS_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.InvoiceStatus"); break;
+				case "BAS_RUBRIC_CATEGORY_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.RubricCategory"); break;
+				case "PRC_PACKAGE_FK": GeneratePropertyGroupingAttributeForEntity("Procurement.Package.Package"); break;
+				case "MDC_CONTROLLINGUNIT_FK": GeneratePropertyGroupingAttributeForEntity("Controlling.Structure.ControllingUnit"); break;
+				case "PRC_STRUCTURE_FK": GeneratePropertyGroupingAttributeForEntity("Basics.ProcurementStructure.Structure"); break;
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				case "PRC_CONFIGURATION_FK": GeneratePropertyGroupingAttributeForEntity("Basics.ProcurementConfiguration.Configuration"); break;
+				case "INV_TYPE_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.InvoiceType"); break;
+				case "INV_GROUP_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.InvoiceGroup"); break;
+				case "MDC_BILLING_SCHEMA_FK": GeneratePropertyGroupingAttributeForEntity("Basics.BillingSchema.BillingSchema"); break;
+				case "BPD_BUSINESSPARTNER_FK": GeneratePropertyGroupingAttributeForEntity("BusinessParter.Main.BusinessPartner"); break;
+				case "BPD_SUPPLIER_FK": GeneratePropertyGroupingAttributeForEntity("BusinessPartner.Main.Supplier"); break;
+				case "BAS_CLERK_WFE_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Clerk.WfeClerk"); break;
+				case "BAS_CLERK_PRC_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Clerk.PrcClerk"); break;
+				case "BAS_CLERK_REQ_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Clerk.ReqClerk"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForControllingUnitEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForControllingUnitEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "MDC_CONTROLLINGUNIT_LVL6_FK": GeneratePropertyGroupingAttributeForEntity("Controlling.Structure.ControllingUnit"); break;
+				case "MDC_CONTROLLINGUNIT_LVL4_FK": GeneratePropertyGroupingAttributeForEntity("Controlling.Structure.ControllingUnit"); break;
+				case "MDC_CONTROLLINGUNIT_LVL3_FK": GeneratePropertyGroupingAttributeForEntity("Controlling.Structure.ControllingUnit"); break;
+				case "MDC_CONTROLLINGUNIT_FK": GeneratePropertyGroupingAttributeForEntity("Controlling.Structure.ControllingUnit"); break;
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				case "MDC_CONTROLLINGUNIT_LVL1_FK": GeneratePropertyGroupingAttributeForEntity("Controlling.Structure.ControllingUnit"); break;
+				case "MDC_CONTROLLINGUNIT_LVL2_FK": GeneratePropertyGroupingAttributeForEntity("Controlling.Structure.ControllingUnit"); break;
+				case "MDC_CONTROLLINGUNIT_LVL5_FK": GeneratePropertyGroupingAttributeForEntity("Controlling.Structure.ControllingUnit"); break;
+				case "MDC_CONTROLLINGUNIT_LVL7_FK": GeneratePropertyGroupingAttributeForEntity("Controlling.Structure.ControllingUnit"); break;
+				case "MDC_CONTROLLINGUNIT_LVL8_FK": GeneratePropertyGroupingAttributeForEntity("Controlling.Structure.ControllingUnit"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForMaterialEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForMaterialEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForModelObjectEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForModelObjectEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "MDC_CONTROLLINGUNIT_FK": GeneratePropertyGroupingAttributeForEntity("Controlling.Structure.ControllingUnit"); break;
+				case "PRJ_COSTGROUP4_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.CostGroup04"); break;
+				case "PRJ_COSTGROUP5_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.CostGroup05"); break;
+				case "LIC_COSTGROUP1_FK": GeneratePropertyGroupingAttributeForEntity("Basics.CostGroups.CostGroup01"); break;
+				case "LIC_COSTGROUP2_FK": GeneratePropertyGroupingAttributeForEntity("Basics.CostGroups.CostGroup02"); break;
+				case "LIC_COSTGROUP3_FK": GeneratePropertyGroupingAttributeForEntity("Basics.CostGroups.CostGroup03"); break;
+				case "LIC_COSTGROUP4_FK": GeneratePropertyGroupingAttributeForEntity("Basics.CostGroups.CostGroup04"); break;
+				case "LIC_COSTGROUP5_FK": GeneratePropertyGroupingAttributeForEntity("Basics.CostGroups.CostGroup05"); break;
+				case "PRJ_COSTGROUP1_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.CostGroup01"); break;
+				case "PRJ_COSTGROUP2_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.CostGroup02"); break;
+				case "PRJ_COSTGROUP3_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.CostGroup03"); break;
+				case "PRJ_LOCATION_FK": GeneratePropertyGroupingAttributeForEntity("Project.Location.Location"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForChangeSetEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForChangeSetEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForObjectUnitEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForObjectUnitEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "PRJ_LOCATION_FK": GeneratePropertyGroupingAttributeForEntity("Project.Location.Location"); break;
+				case "MDC_CONTROLLINGUNIT_FK": GeneratePropertyGroupingAttributeForEntity("Controlling.Structure.ControllingUnit"); break;
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForOrdHeaderEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForOrdHeaderEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "EST_HEADER_FK": GeneratePropertyGroupingAttributeForEntity("Estimate.Main.Estimate"); break;
+				case "BAS_RUBRIC_CATEGORY_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.RubricCategory"); break;
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				case "PRJ_CHANGE_FK": GeneratePropertyGroupingAttributeForEntity("Change.Main.Change"); break;
+				case "PRC_STRUCTURE_FK": GeneratePropertyGroupingAttributeForEntity("Basics.ProcurementStructure.Structure"); break;
+				case "MDC_CONTROLLINGUNIT_FK": GeneratePropertyGroupingAttributeForEntity("Controlling.Structure.ControllingUnit"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForQuoteHeaderEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForQuoteHeaderEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForQtoHeaderEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForQtoHeaderEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				case "BAS_RUBRIC_CATEGORY_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.RubricCategory"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForPesHeaderEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForPesHeaderEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				case "PRC_PACKAGE_FK": GeneratePropertyGroupingAttributeForEntity("Procurement.Package.Package"); break;
+				case "MDC_CONTROLLINGUNIT_FK": GeneratePropertyGroupingAttributeForEntity("Controlling.Structure.ControllingUnit"); break;
+				case "PRC_STRUCTURE_FK": GeneratePropertyGroupingAttributeForEntity("Basics.ProcurementStructure.Structure"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForPrcPackageEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForPrcPackageEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				case "PRC_STRUCTURE_FK": GeneratePropertyGroupingAttributeForEntity("Basics.ProcurementStructure.Structure"); break;
+				case "PSD_ACTIVITY_FK": GeneratePropertyGroupingAttributeForEntity("Scheduling.Main.Activity"); break;
+				case "MDC_ASSET_MASTER_FK": GeneratePropertyGroupingAttributeForEntity("Basics.AssetMaster.AssetMaster"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForChangeEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForChangeEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForInfoRequestEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForInfoRequestEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForProjectEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForProjectEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "PRJ_PROJECT_MAIN_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				case "BAS_RUBRIC_CATEGORY_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.RubricCategory"); break;
+				case "MDC_ASSET_MASTER_FK": GeneratePropertyGroupingAttributeForEntity("Basics.AssetMaster.AssetMaster"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForActivityEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForActivityEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "PSD_ACTIVITY_LEVEL3_FK": GeneratePropertyGroupingAttributeForEntity("Scheduling.Main.Activity"); break;
+				case "PSD_ACTIVITY_LEVEL5_FK": GeneratePropertyGroupingAttributeForEntity("Scheduling.Main.Activity"); break;
+				case "PSD_ACTIVITY_LEVEL8_FK": GeneratePropertyGroupingAttributeForEntity("Scheduling.Main.Activity"); break;
+				case "PRJ_LOCATION_FK": GeneratePropertyGroupingAttributeForEntity("Project.Location.Location"); break;
+				case "PSD_PARENTACTIVITY_FK": GeneratePropertyGroupingAttributeForEntity("Scheduling.Main.Activity"); break;
+				case "PSD_BASEACTIVITY_FK": GeneratePropertyGroupingAttributeForEntity("Scheduling.Main.Activity"); break;
+				case "PSD_ACTIVITY_LEVEL7_FK": GeneratePropertyGroupingAttributeForEntity("Scheduling.Main.Activity"); break;
+				case "PRC_STRUCTURE_FK": GeneratePropertyGroupingAttributeForEntity("Basics.ProcurementStructure.Structure"); break;
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				case "PSD_ACTIVITY_LEVEL1_FK": GeneratePropertyGroupingAttributeForEntity("Scheduling.Main.Activity"); break;
+				case "PSD_ACTIVITY_LEVEL2_FK": GeneratePropertyGroupingAttributeForEntity("Scheduling.Main.Activity"); break;
+				case "PSD_ACTIVITY_LEVEL4_FK": GeneratePropertyGroupingAttributeForEntity("Scheduling.Main.Activity"); break;
+				case "PSD_ACTIVITY_LEVEL6_FK": GeneratePropertyGroupingAttributeForEntity("Scheduling.Main.Activity"); break;
+				case "MDC_CONTROLLINGUNIT_FK": GeneratePropertyGroupingAttributeForEntity("Controlling.Structure.ControllingUnit"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForReqHeaderEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForReqHeaderEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				case "PRJ_CHANGE_FK": GeneratePropertyGroupingAttributeForEntity("Change.Main.Change"); break;
+				case "PRC_PACKAGE_FK": GeneratePropertyGroupingAttributeForEntity("Procurement.Package.Package"); break;
+				case "MDC_CONTROLLINGUNIT_FK": GeneratePropertyGroupingAttributeForEntity("Controlling.Structure.ControllingUnit"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForRfqHeaderEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForRfqHeaderEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForRequisitionEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForRequisitionEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				case "BAS_SITE_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Site.Site"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForTrsRouteEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForTrsRouteEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "PRJ_PROJECT_DEF_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				case "PRJ_PROJECT_FK":
+					GeneratePropertyGroupingAttributeForEntity("TransportPlanning.Transport.ProjectName", "ProjectName");
+					GeneratePropertyGroupingAttributeForEntity("TransportPlanning.Transport.ProjectNo", "ProjectNo");
+					break;
+				case "BAS_SITE_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Site.Site"); break;
+				case "ID":
+					GeneratePropertyGroupingAttributeForEntity("TransportPlanning.Transport.ActualDelivery", "ActualDelivery");
+					GeneratePropertyGroupingAttributeForEntity("TransportPlanning.Transport.PlannedDelivery", "PlannedDelivery");
+					break;
+				case "PPS_EVENT_FK":
+					GeneratePropertyGroupingAttributeForEntity("TransportPlanning.Transport.ActualStart", "ActualStart");
+					GeneratePropertyGroupingAttributeForEntity("TransportPlanning.Transport.ActualFinish", "ActualFinish");
+					GeneratePropertyGroupingAttributeForEntity("TransportPlanning.Transport.PlannedStart", "PlannedStart");
+					GeneratePropertyGroupingAttributeForEntity("TransportPlanning.Transport.PlannedFinish", "PlannedStart");
+					GeneratePropertyGroupingAttributeForEntity("TransportPlanning.Transport.EarliestStart", "EarliestStart");
+					GeneratePropertyGroupingAttributeForEntity("TransportPlanning.Transport.EarliestFinish", "EarliestStart");
+					GeneratePropertyGroupingAttributeForEntity("TransportPlanning.Transport.LatestStart", "LatestStart");
+					GeneratePropertyGroupingAttributeForEntity("TransportPlanning.Transport.LatestFinish", "LatestStart");
+					GeneratePropertyGroupingAttributeForEntity("TransportPlanning.Transport.Job", "Job");
+					break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForWipHeaderEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForWipHeaderEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "BAS_RUBRIC_CATEGORY_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.RubricCategory"); break;
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				default: break;
+			}
+		}
+	}
+	
+	// Method GeneratePropertyGroupingAttributeForDocumentEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForDocumentEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				case "BAS_RUBRIC_CATEGORY_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.RubricCategory"); break;
+				case "PRJ_DOCUMENTCATEGORY_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.PrjDocumentCategory"); break;
+				case "BAS_DOCUMENT_TYPE_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.DocumentType"); break;
+				case "PRJ_DOCUMENTSTATUS_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.PrjDocumentStatus"); break;
+				case "PRJ_DOCUMENTTYPE_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Customize.PrjDocumentType"); break;
+				case "PRC_STRUCTURE_FK": GeneratePropertyGroupingAttributeForEntity("Basics.ProcurementStructure.Structure"); break;
+				case "PRC_PACKAGE_FK": GeneratePropertyGroupingAttributeForEntity("Procurement.Package.Package"); break;
+				case "RFQ_HEADER_FK": GeneratePropertyGroupingAttributeForEntity("Procurement.Rfq.Rfq"); break;
+				case "QTN_HEADER_FK": GeneratePropertyGroupingAttributeForEntity("Procurement.Quote.Quote"); break;
+				case "CON_HEADER_FK": GeneratePropertyGroupingAttributeForEntity("Procurement.Contract.Contract"); break;
+				case "PES_HEADER_FK": GeneratePropertyGroupingAttributeForEntity("Procurement.Pes.Pes"); break;
+				case "REQ_HEADER_FK": GeneratePropertyGroupingAttributeForEntity("Procurement.Requisition.Requisition"); break;
+				case "INV_HEADER_FK": GeneratePropertyGroupingAttributeForEntity("Procurement.Invoice.Invoice"); break;
+				case "EST_HEADER_FK": GeneratePropertyGroupingAttributeForEntity("Estimate.Main.Estimate"); break;
+				case "PRJ_CHANGE_FK": GeneratePropertyGroupingAttributeForEntity("Change.Main.Change"); break;
+				case "PRJ_INFOREQUEST_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.InfoRequest"); break;
+				case "PSD_SCHEDULE_FK": GeneratePropertyGroupingAttributeForEntity("Scheduling.Main.Schedule"); break;
+				case "PSD_ACTIVITY_FK": GeneratePropertyGroupingAttributeForEntity("Scheduling.Main.Activity"); break;
+				case "BIL_HEADER_FK": GeneratePropertyGroupingAttributeForEntity("Sales.Main.Billing"); break;
+				case "WIP_HEADER_FK": GeneratePropertyGroupingAttributeForEntity("Sales.Main.Wip"); break;
+				case "QTO_HEADER_FK": GeneratePropertyGroupingAttributeForEntity("Qto.Main.Qto"); break;
+				case "LGM_JOB_FK": GeneratePropertyGroupingAttributeForEntity("Logistic.Job.Job"); break;
+				case "LGM_DISPATCH_HEADER_FK": GeneratePropertyGroupingAttributeForEntity("Logistic.Dispatch.Dispatch"); break;
+				case "LGM_SETTLEMENT_FK": GeneratePropertyGroupingAttributeForEntity("Logistic.Settlement.Settlement"); break;
+				case "MDL_MODEL_FK": GeneratePropertyGroupingAttributeForEntity("Model.Main.Model"); break;
+				case "MDC_CONTROLLINGUNIT_FK": GeneratePropertyGroupingAttributeForEntity("Controlling.Structure.ControllingUnit"); break;
+				case "PRJ_LOCATION_FK": GeneratePropertyGroupingAttributeForEntity("Project.Location.Location"); break;
+				case "BPD_BUSINESSPARTNER_FK": GeneratePropertyGroupingAttributeForEntity("BusinessParter.Main.BusinessPartner"); break;
+				case "BPD_CERTIFICATE_FK": GeneratePropertyGroupingAttributeForEntity("BusinessParter.Main.Certificate"); break;
+				case "MDC_MATERIAL_CATALOG_FK": GeneratePropertyGroupingAttributeForEntity("Basics.MaterialCatalog.Catalog"); break;
+				case "BPD_CONTACT_FK": GeneratePropertyGroupingAttributeForEntity("BusinessParter.Main.Contact"); break;
+				default: break;
+			}
+		}
+	}
+	
+	// Method GeneratePropertyGroupingAttributeForPpsItemEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForPpsItemEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "ID": GeneratePropertyGroupingAttributeForEntity("ProductionPlanning.Item.PlannedStart", "PlannedStart"); 
+							GeneratePropertyGroupingAttributeForEntity("ProductionPlanning.Item.PlannedFinish", "PlannedFinish"); 
+							GeneratePropertyGroupingAttributeForEntity("ProductionPlanning.Item.EarliestStart", "EarliestStart"); 
+							GeneratePropertyGroupingAttributeForEntity("ProductionPlanning.Item.EarliestFinish", "EarliestFinish"); 
+							GeneratePropertyGroupingAttributeForEntity("ProductionPlanning.Item.LatestStart", "LatestStart"); 
+							GeneratePropertyGroupingAttributeForEntity("ProductionPlanning.Item.LatestFinish", "LatestFinish"); break;
+				case "MDC_MATERIAL_GROUP_FK": GeneratePropertyGroupingAttributeForEntity("Basics.MaterialCatalog.MaterialGroup"); break;
+				case "MDC_MATERIAL_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Material.Material"); break;
+				case "PRJ_LOCATION_FK": GeneratePropertyGroupingAttributeForEntity("Project.Location.Location"); break;
+				case "BAS_SITE_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Site.Site"); break;
+				case "LGM_JOB_FK": GeneratePropertyGroupingAttributeForEntity("Logistic.Job.Job"); break;
+				default: break;
+			}
+		}
+	}
+	
+	// Method GeneratePropertyGroupingAttributeForPpsItemEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForPpsItemVEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "ID": GeneratePropertyGroupingAttributeForEntity("ProductionPlanning.Item.PlannedStart", "PlannedStart"); 
+							GeneratePropertyGroupingAttributeForEntity("ProductionPlanning.Item.PlannedFinish", "PlannedFinish"); 
+							GeneratePropertyGroupingAttributeForEntity("ProductionPlanning.Item.EarliestStart", "EarliestStart"); 
+							GeneratePropertyGroupingAttributeForEntity("ProductionPlanning.Item.EarliestFinish", "EarliestFinish"); 
+							GeneratePropertyGroupingAttributeForEntity("ProductionPlanning.Item.LatestStart", "LatestStart"); 
+							GeneratePropertyGroupingAttributeForEntity("ProductionPlanning.Item.LatestFinish", "LatestFinish");
+							GeneratePropertyGroupingAttributeForEntity("ProductionPlanning.Item.ClerkFk", "ClerkFk");
+							break;
+				case "MDC_MATERIAL_GROUP_FK": GeneratePropertyGroupingAttributeForEntity("Basics.MaterialCatalog.MaterialGroup"); break;
+				case "MDC_MATERIAL_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Material.Material"); break;
+				case "PRJ_LOCATION_FK": GeneratePropertyGroupingAttributeForEntity("Project.Location.Location"); break;
+				case "BAS_SITE_FK": GeneratePropertyGroupingAttributeForEntity("Basics.Site.Site"); break;
+				case "LGM_JOB_FK": GeneratePropertyGroupingAttributeForEntity("Logistic.Job.Job"); break;
+				case "ORD_HEADER_FK": GeneratePropertyGroupingAttributeForEntity("Sales.Contract.OrdHeader"); break;
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("ProductionPlanning.Item.ProjectNo");
+										GeneratePropertyGroupingAttributeForEntity("ProductionPlanning.Item.ProjectName"); break;
+				case "WHOUPD": GeneratePropertyGroupingAttributeForEntity("WhoUpd", "WhoUpd"); break;
+				case "WHOISR": GeneratePropertyGroupingAttributeForEntity("WhoIsr", "WhoIsr"); break;
+				case "UPDATED": GeneratePropertyGroupingAttributeForEntity("Updated", "Updated"); break;
+				case "INSERTED": GeneratePropertyGroupingAttributeForEntity("INSERTED", "INSERTED"); break;
+				default: break;
+			}
+		}
+	}
+	
+	// Method GeneratePropertyGroupingAttributeForPpsProductEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForPpsProductEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "ID":
+					GeneratePropertyGroupingAttributeForEntity("ProductionPlanning.Product.PlannedStart", "PlannedStart");
+					GeneratePropertyGroupingAttributeForEntity("ProductionPlanning.Product.PlannedFinish", "PlannedFinish");
+					GeneratePropertyGroupingAttributeForEntity("ProductionPlanning.Product.EarliestStart", "EarliestStart");
+					GeneratePropertyGroupingAttributeForEntity("ProductionPlanning.Product.EarliestFinish", "EarliestFinish");
+					GeneratePropertyGroupingAttributeForEntity("ProductionPlanning.Product.LatestStart", "LatestStart");
+					GeneratePropertyGroupingAttributeForEntity("ProductionPlanning.Product.LatestFinish", "LatestFinish");
+					GeneratePropertyGroupingAttributeForEntity("PPS.Product.Project", "Project");
+					GeneratePropertyGroupingAttributeForEntity("PPS.Product.Material", "Material");
+					GeneratePropertyGroupingAttributeForEntity("PPS.Product.Drawing", "Drawing");
+					GeneratePropertyGroupingAttributeForEntity("PPS.Product.PpsItemPrjLocation");
+					break;
+				case "PRJ_LOCATION_FK": GeneratePropertyGroupingAttributeForEntity("Project.Location.Location"); break;
+				case "LGM_JOB_FK": GeneratePropertyGroupingAttributeForEntity("Logistic.Job.Job"); break;
+				default: break;
+			}
+		}
+	}	
+	
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForReservationEntity(EntityProperty property, EntityClass cls)
+	// Generate grouping attribute to a column, if necessary
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	public void GeneratePropertyGroupingAttributeForReservationEntity(EntityProperty property, EntityClass cls) {
+		string column = GetPropertyColumnName(property, cls);
+		if(column != null) {
+			switch(column) {
+				case "PRJ_PROJECT_FK": GeneratePropertyGroupingAttributeForEntity("Project.Main.Project"); break;
+				default: break;
+			}
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method ClassSupportsGrouping(EntityClass cls)
+	// Checks if class supports grouping
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	private bool ClassSupportsGrouping(EntityClass cls) {
+		return (bool)cls.GetProperty("SupportsGrouping");
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GetPropertyColumnName(Property property, EntityClass cls)
+	// Gets column to a given property
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	private string GetPropertyColumnName(EntityProperty property, EntityClass cls) {
+		var column = property.GetStorageColumn(cls.ClassMapping);
+		if(column != null) {
+			return column.Name;
+		}
+		return string.Empty;
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForEntity(string entity)
+	// Generates a simple grouping attribute for a property of an entity
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	private void GeneratePropertyGroupingAttributeForEntity(string entity) {
+#>
+        [RIB.Visual.Platform.Common.Grouping(GroupColumnId = @"<#= entity #>")]
+<#+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeForEntity(string entity, string hint)
+	// Generates a simple grouping attribute for an unmapped property of an entity with an mapping hint
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	private void GeneratePropertyGroupingAttributeForEntity(string entity, string mappingHint) {
+#>
+        [RIB.Visual.Platform.Common.Grouping(GroupColumnId = @"<#= entity #>", MappingHint = @"<#= mappingHint #>")]
+<#+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	//
+	// Method GeneratePropertyGroupingAttributeWithRef1ForEntity(string entity, string ref1)
+	// Generates a grouping attribute with one reference for a property of an entity
+	//
+	///////////////////////////////////////////////////////////////////////////////////
+	private void GeneratePropertyGroupingAttributeWithRef1ForEntity(string entity, string ref1) {
+#>
+        [RIB.Visual.Platform.Common.Grouping(GroupColumnId = @"<#= entity #>", ReferenceKey1 = @"<#= ref1 #>")]
+<#+	}
+#>
